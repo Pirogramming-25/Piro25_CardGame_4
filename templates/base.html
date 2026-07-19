@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}PIRO CARD GAME{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/common.css' %}">
+  <style>
+    /* 메시지 알림 최소 스타일 (디자인 시스템에 별도 클래스가 없어 보조로 둠) */
+    .messages { list-style: none; max-width: 720px; margin: 16px auto; padding: 0; }
+    .messages li {
+      padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; font-size: 14px;
+      background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12);
+    }
+    .messages li.success { border-color: rgba(61,255,138,.5); color: var(--neon-green); }
+    .messages li.error { border-color: rgba(255,59,92,.5); color: var(--neon-red); }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="logo" href="/">PIRO CARD</a>
+    <nav class="nav-links">
+      <a href="{% url 'game:attack' %}">공격하기</a>
+      <a href="/history/">랭킹</a>
+    </nav>
+    {% if user.is_authenticated %}
+    <div class="user-chip">
+      <span class="avatar">{{ user.username|slice:":1"|upper }}</span>
+      <span>{{ user.username }}</span>
+      <span class="score">{{ user.score }}점</span>
+    </div>
+    {% endif %}
+  </header>
+
+  <main class="page-shell">
+    {% if messages %}
+    <ul class="messages">
+      {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
