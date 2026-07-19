@@ -16,8 +16,11 @@ def counter_page(request, game_id):
         Game, pk=game_id, defender=request.user, status=Game.Status.WAITING
     )
 
-    hand = deal_hand()
-    request.session[f"{SESSION_KEY_PREFIX}{game.id}"] = hand
+    session_key = f"{SESSION_KEY_PREFIX}{game.id}"
+    hand = request.session.get(session_key)
+    if not hand:
+        hand = deal_hand()
+        request.session[session_key] = hand
 
     return render(request, "game/counter.html", {"game": game, "hand": hand})
 
