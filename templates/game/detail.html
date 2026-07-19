@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}{% if game.status == 'finished' %}대결 결과{% else %}반격 대기중{% endif %} · Piro Game{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* 메시지 알림 최소 스타일 (공통 CSS에 별도 클래스가 없어 보조로 둠) */
+  .messages { list-style: none; max-width: 720px; margin: 16px auto 0; padding: 0; }
+  .messages li {
+    padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; font-size: 14px;
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12);
+  }
+  .messages li.success { border-color: rgba(61,255,138,.5); color: var(--neon-green); }
+  .messages li.error { border-color: rgba(255,59,92,.5); color: var(--neon-red); }
+
+  .status-row { text-align: center; margin: -12px 0 28px; }
+
+  /* vs-stage 안에서 보여주기만 하는(선택 불가) 카드 표시용 */
+  .card-display {
+    width: 74px; height: 104px;
+    border-radius: 10px;
+    border: 1px solid rgba(61,255,138,.35);
+    background: linear-gradient(160deg, var(--bg-panel-2), var(--bg-panel));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-pixel);
+    font-size: 22px;
+    color: var(--neon-green);
+  }
+  .card-display.back {
+    border: 1px dashed rgba(163,91,255,.4);
+    color: var(--accent-purple);
+    font-size: 20px;
+  }
+
+  .rule-note { text-align: center; color: var(--text-dim); font-size: 12px; margin: -18px 0 28px; }
+
+  .result-tag {
+    font-family: var(--font-pixel);
+    font-size: 24px;
+    text-align: center;
+    margin: 4px 0 10px;
+  }
+  .result-tag.win { color: var(--neon-green); text-shadow: 0 0 16px var(--neon-green-glow); }
+  .result-tag.lose { color: var(--neon-red); text-shadow: 0 0 16px var(--neon-red-glow); }
+  .result-tag.draw { color: var(--text-dim); }
+
+  .delta-tag { text-align: center; font-size: 14px; font-weight: 700; margin-bottom: 40px; }
+  .delta-tag.win { color: var(--neon-green); }
+  .delta-tag.lose { color: var(--neon-red); }
+  .delta-tag.draw { color: var(--text-dim); }
+
+  .waiting-panel { max-width: 480px; margin: 0 auto 40px; text-align: center; }
+  .waiting-panel p { color: var(--text-dim); font-size: 14px; margin: 14px 0 22px; }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if messages %}
+<ul class="messages">
+  {% for message in messages %}
+  <li class="{{ message.tags }}">{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+<h1 class="page-title">{% if game.status == 'finished' %}대결 결과{% else %}반격 대기중{% endif %}</h1>
+
+{% if game.status == 'finished' %}
+<p class="page-subtitle">{{ game.finished_at|date:"n월 j일 H:i" }} 종료</p>
+{% else %}
+<p class="page-subtitle">아직 반격이 이루어지지 않았어요</p>
+{% endif %}
+
+<div class="status-row">
+  {% if game.status == 'finished' %}
+  <span class="badge finished">종료</span>
+  {% elif request.user == game.defender %}
+  <span class="badge counter">반격 대기</span>
+  {% else %}
+  <span class="badge pending">대기중</span>
+  {% endif %}
+</div>
+
+<div class="vs-stage">
+  {% if request.user == game.attacker %}
+  <div class="vs-side me">
+    <span class="role">ME · ATTACKER</span>
+    <span class="name">{{ game.attacker.username }}</span>
+    <div class="card-display">{{ game.attacker_card }}</div>
+  </div>
+  <div class="vs-divider">VS</div>
+  <div class="vs-side opp">
+    <span class="role">TARGET · DEFENDER</span>
+    <span class="name">{{ game.defender.username }}</span>
+    {% if game.status == 'finished' %}
+    <div class="card-display">{{ game.defender_card }}</div>
+    {% else %}
+    <div class="card-display back">?</div>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="vs-side opp">
+    <span class="role">ATTACKER</span>
+    <span class="name">{{ game.attacker.username }}</span>
+    {% if game.status == 'finished' %}
+    <div class="card-display">{{ game.attacker_card }}</div>
+    {% else %}
+    <div class="card-display back">?</div>
+    {% endif %}
+  </div>
+  <div class="vs-divider">VS</div>
+  <div class="vs-side me">
+    <span class="role">ME · DEFENDER</span>
+    <span class="name">{{ game.defender.username }}</span>
+    {% if game.status == 'finished' %}
+    <div class="card-display">{{ game.defender_card }}</div>
+    {% else %}
+    <div class="card-display back">?</div>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+{% if game.status == 'finished' %}
+<p class="rule-note">이번 대결 승리 기준: <strong>{{ game.get_rule_display }}</strong></p>
+
+{% if game.winner == request.user %}
+<div class="result-tag win">🏆 승리!</div>
+<div class="delta-tag win">
+  {% if request.user == game.attacker %}+{{ game.attacker_delta }}{% else %}+{{ game.defender_delta }}{% endif %}pt
+</div>
+{% elif game.winner is None %}
+<div class="result-tag draw">🤝 무승부</div>
+<div class="delta-tag draw">±0pt</div>
+{% else %}
+<div class="result-tag lose">💥 패배</div>
+<div class="delta-tag lose">
+  {% if request.user == game.attacker %}{{ game.attacker_delta }}{% else %}{{ game.defender_delta }}{% endif %}pt
+</div>
+{% endif %}
+
+{% else %}
+<div class="waiting-panel">
+  {% if request.user == game.defender %}
+  <p>상대가 카드를 제시했어요. 반격 카드를 선택해서 승부를 확정지으세요!</p>
+  <a href="{% url 'game:counter_page' game.id %}" class="btn-neon red">반격하러 가기</a>
+  {% else %}
+  <p>상대가 아직 반격하지 않았어요. 조금만 기다려주세요.</p>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}
