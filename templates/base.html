@@ -2,45 +2,48 @@
 {% load socialaccount %}
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block title %}Piro Game{% endblock %}</title>
-<link rel="stylesheet" href="{% static 'css/common.css' %}">
-{% block extra_css %}{% endblock %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Piro Game{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/common.css' %}">
+  {% block extra_css %}{% endblock %}
 </head>
+
 <body>
 
-<header class="site-header">
-  <a href="{% url 'main' %}" class="logo">🛸 Piro Game</a>
+  <header class="site-header">
+    <a href="{% url 'main' %}" class="logo">🛸 Piro Game</a>
 
-  {% if user.is_authenticated %}
-  <nav class="nav-links">
-    <a href="{% url 'game:attack' %}">게임하기</a>
-    <a href="{% url 'game_list' %}">전적</a>
-    <a href="{% url 'ranking' %}">랭킹보기</a>
-  </nav>
-  <div style="display:flex;align-items:center;gap:16px;">
-    <div class="user-chip">
-      <div class="avatar">👽</div>
-      <span>{{ user.username }} ⌄</span>
-      <span class="score">{{ user.profile.score }}pt</span>
+    {% if user.is_authenticated %}
+    <nav class="nav-links">
+      <a href="{% url 'game:attack' %}">게임하기</a>
+      <a href="{% url 'game_list' %}">전적</a>
+      <a href="{% url 'ranking' %}">랭킹보기</a>
+    </nav>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <div class="user-chip">
+        <div class="avatar">👽</div>
+        <span>{{ user.username }} ⌄</span>
+        <span class="score">{{ user.score }}pt</span>
+      </div>
+      <a href="{% url 'account_logout' %}" style="color:var(--text-dim);font-size:13px;text-decoration:none;">로그아웃</a>
     </div>
-    <a href="{% url 'account_logout' %}" style="color:var(--text-dim);font-size:13px;text-decoration:none;">로그아웃</a>
-  </div>
-  {% else %}
-  <nav class="nav-links" style="gap:10px;">
-    <a href="{% url 'account_login' %}">로그인</a>
-    <span style="color:var(--text-dim);">|</span>
-    <a href="{% url 'account_signup' %}">회원가입</a>
-  </nav>
-  {% endif %}
-</header>
+    {% else %}
+    <nav class="nav-links" style="gap:10px;">
+      <a href="{% url 'account_login' %}">로그인</a>
+      <span style="color:var(--text-dim);">|</span>
+      <a href="{% url 'account_signup' %}">회원가입</a>
+    </nav>
+    {% endif %}
+  </header>
 
-<main class="page-shell">
-  {% block content %}{% endblock %}
-</main>
+  <main class="page-shell">
+    {% block content %}{% endblock %}
+  </main>
 
-{% block extra_js %}{% endblock %}
+  {% block extra_js %}{% endblock %}
 </body>
+
 </html>

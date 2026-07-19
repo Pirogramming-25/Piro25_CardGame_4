@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}공격하기 · Piro Game{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* 메시지 알림 최소 스타일 (공통 CSS에 별도 클래스가 없어 보조로 둠) */
+  .messages { list-style: none; max-width: 720px; margin: 16px auto 0; padding: 0; }
+  .messages li {
+    padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; font-size: 14px;
+    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12);
+  }
+  .messages li.success { border-color: rgba(61,255,138,.5); color: var(--neon-green); }
+  .messages li.error { border-color: rgba(255,59,92,.5); color: var(--neon-red); }
+  .row-actions { display: flex; align-items: center; gap: 12px; }
+  .game-row .btn-neon { padding: 8px 16px; }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if messages %}
+<ul class="messages">
+  {% for message in messages %}
+  <li class="{{ message.tags }}">{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+<h1 class="page-title">공격하기</h1>
+<p class="page-subtitle">카드를 골라 상대에게 대결을 신청하세요</p>
+
+<form method="post" action="{% url 'game:attack' %}" id="attack-form">
+  {% csrf_token %}
+
+  <div class="vs-stage">
+    <div class="vs-side me">
+      <span class="role">ME</span>
+      <span class="name">{{ user.username }}</span>
+    </div>
+    <div class="vs-divider">VS</div>
+    <div class="vs-side opp">
+      <span class="role">TARGET</span>
+      <select class="opp-select" name="opponent" required>
+        <option value="">상대 선택…</option>
+        {% for opp in opponents %}
+        <option value="{{ opp.pk }}">{{ opp.username }} ({{ opp.score }}점)</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <p class="page-subtitle">숫자 카드 5장 중 1장을 선택하세요</p>
+  <div class="card-row">
+    {% for n in hand %}
+    <div class="card-number" data-value="{{ n }}">{{ n }}</div>
+    {% endfor %}
+  </div>
+
+  <input type="hidden" name="card" id="card-input">
+
+  <div class="btn-row">
+    <button type="submit" class="btn-neon">대결 신청</button>
+  </div>
+</form>
+
+{% if my_pending %}
+<h2 class="page-subtitle">내가 보낸 신청</h2>
+<div class="game-list">
+  {% for g in my_pending %}
+  <div class="game-row">
+    <div class="who">
+      {{ g.defender.username }}
+      <span>내 카드 {{ g.attacker_card }} · {{ g.created_at|date:"n월 j일 H:i" }}</span>
+    </div>
+    <div class="row-actions">
+      <span class="badge pending">대기중</span>
+      <form method="post" action="{% url 'game:cancel_attack' g.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-neon red">취소</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    var cards = document.querySelectorAll('.card-number');
+    var input = document.getElementById('card-input');
+    var form = document.getElementById('attack-form');
+
+    cards.forEach(function (card) {
+      card.addEventListener('click', function () {
+        cards.forEach(function (c) { c.classList.remove('selected'); });
+        card.classList.add('selected');
+        input.value = card.dataset.value;
+      });
+    });
+
+    form.addEventListener('submit', function (e) {
+      if (!input.value) {
+        e.preventDefault();
+        alert('숫자 카드를 선택해주세요.');
+      }
+    });
+  })();
+</script>
+{% endblock %}
