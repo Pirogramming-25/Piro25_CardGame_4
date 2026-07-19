@@ -4,13 +4,28 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from .models import Game, deal_hand
+from .models import HAND_SIZE, Game, deal_hand
 
 User = get_user_model()
 
 # 공격 페이지에서 제공한 5장의 손패를 세션에 보관하는 키.
 # 제출된 카드가 실제로 제공된 5장 중 하나인지 검증하는 데 사용한다.
 SESSION_HAND_KEY = "attack_hand"
+
+
+def _get_or_deal_hand(session):
+    """진행 중인 손패를 반환한다.
+
+    세션에 유효한 손패가 이미 있으면 그대로 재사용하고, 없을 때만 새로 5장을
+    뽑는다. 이렇게 하면 새로고침(GET 반복)으로 카드를 다시 뽑는 리롤을 막을 수
+    있다. 신청을 완료하면 ``_create_attack`` 이 세션에서 손패를 비우므로, 다음
+    신청 때 자연스럽게 새 손패가 나온다.
+    """
+    hand = session.get(SESSION_HAND_KEY)
+    if not (isinstance(hand, list) and len(hand) == HAND_SIZE):
+        hand = deal_hand()
+        session[SESSION_HAND_KEY] = hand
+    return hand
 
 
 @login_required
@@ -23,9 +38,8 @@ def attack(request):
     if request.method == "POST":
         return _create_attack(request)
 
-    # 1~10 중 서로 다른 5장을 뽑아 세션에 저장(제출 시 검증에 사용).
-    hand = deal_hand()
-    request.session[SESSION_HAND_KEY] = hand
+    # 진행 중인 손패를 세션에서 재사용(없으면 새로 5장). 새로고침 리롤 방지.
+    hand = _get_or_deal_hand(request.session)
 
     opponents = User.objects.exclude(pk=request.user.pk).order_by("username")
     my_pending = Game.objects.filter(
