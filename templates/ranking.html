@@ -29,38 +29,44 @@
             <div class="line"></div>
         </div>
 
-        <!-- 3위까지 보여주는 그래프 영역 -->
+        <!-- 3위까지 보여주는 막대 그래프 시상대 영역 (2위 - 1위 - 3위) -->
         <div class="podium-wrapper">
-            {% for user in ranking_list|slice:":3" %}
-                <div class="podium-item">
+            {% for item in podium_list %}
+                <div class="podium-item rank-{{ item.rank }}">
                     <!-- 유저 정보 -->
                     <div class="user-info">
-                        <div class="user-name">{{ user.username }}</div>
-                        <div class="user-score">{{ user.score }}</div>
+                        <div class="user-name">{{ item.user.username }}</div>
+                        <div class="user-score">{{ item.user.score }} pt</div>
                     </div>
                     
-                    <!-- 등수별 조건부 클래스 바 부여 -->
-                    {% if forloop.counter == 1 %}
-                        <div class="bar rank-1">
-                            <div class="rank-badge">🏆</div>
-                            <div class="rank-number">1</div>
+                    <!-- 등수별 조건부 바 -->
+                    <div class="bar rank-{{ item.rank }}">
+                        <div class="rank-badge">
+                            {% if item.rank == 1 %}🏆
+                            {% elif item.rank == 2 %}🥈
+                            {% else %}🥉{% endif %}
                         </div>
-                    {% elif forloop.counter == 2 %}
-                        <div class="bar rank-2">
-                            <div class="rank-badge">🥈</div>
-                            <div class="rank-number">2</div>
-                        </div>
-                    {% elif forloop.counter == 3 %}
-                        <div class="bar rank-3">
-                            <div class="rank-badge">🥉</div>
-                            <div class="rank-number">3</div>
-                        </div>
-                    {% endif %}
+                        <div class="rank-number">{{ item.rank }}</div>
+                    </div>
                 </div>
             {% empty %}
                 <div class="empty-message">등록된 전적이 없습니다.</div>
             {% endfor %}
         </div>
+
+        <!-- 4위 이하 가로 바 목록 영역 -->
+        {% if other_rankings %}
+        <div class="ranking-list">
+            {% for user in other_rankings %}
+            <div class="ranking-row">
+                <div class="rank-num">{{ forloop.counter|add:3 }}</div>
+                <div class="user-name">👽 {{ user.username }}</div>
+                <div class="user-score">{{ user.score }} pt</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
     </div>
 </div>
 {% endblock %}
