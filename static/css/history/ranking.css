@@ -1,0 +1,150 @@
+/* 전체 배경화면 설정 */
+.ranking-page-container {
+    width: 100%;
+    min-height: calc(100vh - 80px); /* 헤더 높이를 제외한 영역 */
+    background: url("../../images/background.png") no-repeat center center fixed;
+    background-size: 100% 100%;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    font-family: 'Pretendard', -apple-system, sans-serif;
+    box-sizing: border-box;
+}
+
+.podium-card {
+    width: 780px;         /* 420px -> 680px로 가로 대폭 확장 */
+    height: 620px;        /* 560px -> 620px로 세로 확장 */
+    background: rgba(13, 11, 34, 0.85); 
+    border: 2px solid #a855f7; 
+    box-shadow: 0 0 25px rgba(168, 85, 247, 0.7), inset 0 0 20px rgba(168, 85, 247, 0.4);
+    border-radius: 35px; 
+    padding: 40px;        /* 안쪽 여백도 조금 더 여유 있게 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    color: #ffffff;
+    backdrop-filter: blur(8px);
+    box-sizing: border-box;
+}
+
+.podium-card h2 {
+    font-size: 40px;
+    font-weight: 900;
+}
+
+/* 포디엄 그래프 영역 너비 맞춤 */
+.podium-wrapper {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 30px;            /* 개별 바 사이 간격도 넓혀서 시원하게 배치 */
+    width: 100%;
+    height: 320px;        /* 포디엄 높이도 살짝 상향 */
+    margin-top: 20px;
+}
+
+/* 개별 포디엄 바 너비 맞춤 */
+.podium-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 120px;         /* 85px -> 120px로 확장 */
+}
+
+/* 유저 이름 최대 너비 제한 해제 혹은 확장 */
+.user-name {
+    color: #e2e8f0;
+    margin-bottom: 2px;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 120px;     /* 바 너비에 맞춰 확장 */
+}
+.user-score {
+    color: #cbd5e1;
+    font-weight: 600;
+}
+
+/* 공통 포디엄 바 디자인 */
+.bar {
+    width: 100%;
+    border-radius: 8px 8px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    position: relative;
+    box-sizing: border-box;
+}
+
+/* 등수 아이콘 및 숫자 */
+.rank-badge {
+    font-size: 20px;
+    margin-bottom: 5px;
+    opacity: 0.8;
+}
+.rank-number {
+    font-size: 32px;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* 1등 바 개별 스타일 (핑크 네온) */
+.rank-1 {
+    order: 1; /* 왼쪽 배치 */
+    height: 200px;
+    background: linear-gradient(180deg, #ec4899, #be185d);
+    border: 1px solid #f472b6;
+    box-shadow: 0 0 15px rgba(236, 72, 153, 0.5);
+}
+/* 2등 바 개별 스타일 (퍼플 네온) */
+.rank-2 {
+    order: 2; /* 가운데 배치 */
+    height: 160px;
+    background: linear-gradient(180deg, #a855f7, #6b21a8);
+    border: 1px solid #c084fc;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+}
+/* 3등 바 개별 스타일 (블루 네온) */
+.rank-3 {
+    order: 3; /* 오른쪽 배치 */
+    height: 120px;
+    background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+    border: 1px solid #60a5fa;
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+/* 하단 버튼 */
+.view-all-btn {
+    width: 160px;
+    padding: 10px 0;
+    background: transparent;
+    border: 1.5px solid #a855f7;
+    color: #ff7b54;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+    margin-bottom: 15px;
+}
+.view-all-btn:hover {
+    background: rgba(168, 85, 247, 0.2);
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+    color: #ffffff;
+}
+
+.empty-message {
+    color: #94a3b8; 
+    font-size: 14px; 
+    margin-bottom: 100px;
+}

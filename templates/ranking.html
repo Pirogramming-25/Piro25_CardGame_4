@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Piro 명예의 전당{% endblock %}
+
+{% block extra_css %}
+<!-- 분리된 전용 CSS 로드 -->
+<link rel="stylesheet" href="{% static 'css/history/ranking.css' %}">
+<style>
+    body {
+        background: url("{% static 'images/background.png' %}") no-repeat center center fixed !important;
+        background-size: cover !important;
+    }    
+
+    .ranking-page-container {
+        background: transparent !important;
+        width: 100% !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ranking-page-container">
+    <div class="podium-card">
+        <!-- 타이틀 디자인 -->
+        <div class="podium-header">
+            <div class="line"></div>
+            <h2> Piro 명예의 전당 </h2>
+            <div class="line"></div>
+        </div>
+
+        <!-- 3위까지 보여주는 그래프 영역 -->
+        <div class="podium-wrapper">
+            {% for user in ranking_list|slice:":3" %}
+                <div class="podium-item">
+                    <!-- 유저 정보 -->
+                    <div class="user-info">
+                        <div class="user-name">{{ user.username }}</div>
+                        <div class="user-score">{{ user.score }}</div>
+                    </div>
+                    
+                    <!-- 등수별 조건부 클래스 바 부여 -->
+                    {% if forloop.counter == 1 %}
+                        <div class="bar rank-1">
+                            <div class="rank-badge">🏆</div>
+                            <div class="rank-number">1</div>
+                        </div>
+                    {% elif forloop.counter == 2 %}
+                        <div class="bar rank-2">
+                            <div class="rank-badge">🥈</div>
+                            <div class="rank-number">2</div>
+                        </div>
+                    {% elif forloop.counter == 3 %}
+                        <div class="bar rank-3">
+                            <div class="rank-badge">🥉</div>
+                            <div class="rank-number">3</div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <div class="empty-message">등록된 전적이 없습니다.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
