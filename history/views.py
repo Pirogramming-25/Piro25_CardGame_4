@@ -9,10 +9,28 @@ User = get_user_model()
 
 # 1. 전체 랭킹 리그 화면
 def ranking_view(request):
-    # User 모델의 score 순으로 내림차순 정렬
+    # 전체 순위 (점수 내림차순)
     ranking_list = User.objects.all().order_by('-score')
-    return render(request, 'ranking.html', {'ranking_list': ranking_list})
+    
+    # 1~3위 (PODIUM용)
+    top3 = list(ranking_list[:3])
+    
+    podium_list = []
+    if len(top3) >= 2:
+        podium_list.append({'user': top3[1], 'rank': 2, 'class': 'rank-2'}) # 2위 (좌)
+    if len(top3) >= 1:
+        podium_list.append({'user': top3[0], 'rank': 1, 'class': 'rank-1'}) # 1위 (중앙)
+    if len(top3) >= 3:
+        podium_list.append({'user': top3[2], 'rank': 3, 'class': 'rank-3'}) # 3위 (우)
+        
+    # 4위부터 나머지 목록
+    other_rankings = ranking_list[3:]
 
+    context = {
+        'podium_list': podium_list,
+        'other_rankings': other_rankings,
+    }
+    return render(request, 'ranking.html', context)
 
 # 2. 나의 전적 조회 화면
 @login_required
