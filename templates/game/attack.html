@@ -50,6 +50,24 @@
   </div>
 </form>
 
+{% if needs_counter %}
+<h2 class="page-subtitle">내가 반격해야 하는 것들</h2>
+<div class="game-list">
+  {% for g in needs_counter %}
+  <div class="game-row">
+    <div class="who">
+      {{ g.attacker.username }}
+      <span>상대 카드 비공개 · {{ g.created_at|date:"n월 j일 H:i" }}</span>
+    </div>
+    <div class="row-actions">
+      <span class="badge counter">반격 대기</span>
+      <a href="{% url 'game:counter_page' g.pk %}" class="btn-neon red">반격하기</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 {% if my_pending %}
 <h2 class="page-subtitle">내가 보낸 신청</h2>
 <div class="game-list">

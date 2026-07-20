@@ -45,12 +45,19 @@ def attack(request):
     my_pending = Game.objects.filter(
         attacker=request.user, status=Game.Status.WAITING
     ).select_related("defender")
+    needs_counter = Game.objects.filter(
+        defender=request.user, status=Game.Status.WAITING
+    ).select_related("attacker")
 
     context = {
         "hand": hand,
         "opponents": opponents,
         "my_pending": my_pending,
+        "needs_counter": needs_counter,
     }
+
+
+
     return render(request, "game/attack.html", context)
 
 
