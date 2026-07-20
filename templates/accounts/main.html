@@ -8,7 +8,7 @@
 {% if user.is_authenticated %}
 
   <div class="brand-window">
-    <h1 class="page-title" style="margin-top:0;">안녕하세요, <span class="name-highlight">{{ user.username }}</span>님!</h1>
+    <h1 class="page-title" style="margin-top:0; font-family:var(--font-body); letter-spacing:normal;">안녕하세요, <span class="name-highlight">{{ user.username }}</span>님!</h1>
     <p class="page-subtitle">오늘도 즐거운 게임 되세요!</p>
 
     <div class="profile-card">
@@ -18,7 +18,7 @@
         👽
       </div>
       <div style="flex:1;">
-        <div style="font-family:var(--font-pixel);font-size:14px;margin-bottom:8px;">{{ user.username }}</div>
+        <div style="font-family:var(--font-body); font-weight:700; font-size:15px;margin-bottom:8px;">{{ user.username }}</div>
         <div style="display:flex;align-items:center;gap:12px;font-size:13px;">
           <span>⭐ 레벨 {{ level }}</span>
           <span class="stat-divider"></span>
@@ -27,8 +27,8 @@
       </div>
     </div>
 
-    <a href="{% url 'game:attack' %}" class="btn-gradient">🚀 게임 시작 →</a>
-    <a href="{% url 'record' %}" class="btn-ghost">🎴 내 카드 목록 보기</a>
+    <a href="{% url 'game:attack' %}" class="btn-gradient" style="font-family:var(--font-body); letter-spacing:normal;">🚀 게임 시작 →</a>
+    <a href="{% url 'record' %}" class="btn-ghost">🎴 전적 보기</a>
   </div>
 
 {% else %}
@@ -52,8 +52,8 @@
     <div class="divider-row">또는</div>
 
     <div class="auth-row">
-      <a href="{% url 'account_login' %}" class="btn-neon">로그인</a>
-      <a href="{% url 'account_signup' %}" class="btn-neon purple">회원가입</a>
+      <a href="{% url 'account_login' %}" class="btn-neon" style="font-family:var(--font-body); letter-spacing:normal; font-size:14px;">로그인</a>
+      <a href="{% url 'account_signup' %}" class="btn-neon purple" style="font-family:var(--font-body); letter-spacing:normal; font-size:14px;">회원가입</a>
     </div>
   </div>
 
