@@ -8,7 +8,7 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="{% static 'css/history/history.css' %}">
+<link rel="stylesheet" href="{% static 'css/history/record.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -35,13 +35,13 @@
                 <div class="game-status">
                     {% if game.display_status == 'need_counter' %}
                         <!-- 상대방 공격에 대한 반격 버튼 -->
-                        <a href="{% url 'counter_attack' game.id %}" class="btn-action btn-counter">CounterAttack</a>
+                        <a href="{% url 'game:counter_page' game.id %}" class="btn-action btn-counter">CounterAttack</a>
 
                     {% elif game.display_status == 'my_attack_ongoing' %}
                         <!-- 내가 공격 후 진행 중 [진행중..] + [게임취소] -->
                         <div class="status-pending">
                             <span>진행 중..</span>
-                            <form action="{% url 'game_cancel' game.id %}" method="post" class="cancel-form">
+                            <form action="{% url 'game:cancel_attack' game.id %}" method="post" class="cancel-form">
                                 {% csrf_token %}
                                 <button type="submit" class="btn-cancel">게임취소</button>
                             </form>
@@ -60,7 +60,7 @@
 
                 <!-- 상세보기 버튼 -->
                 <div class="game-action">
-                    <a href="{% url 'game_detail' game.id %}" class="btn-action btn-info">게임정보</a>
+                    <a href="{% url 'game:detail' game.id %}" class="btn-action btn-info">게임정보</a>
                 </div>
             </div>
             {% empty %}
