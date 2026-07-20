@@ -1,11 +1,45 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.urls import reverse
 
-from .models import Game
-from .views_start import SESSION_HAND_KEY
+from .models import HAND_SIZE, Game
+from .views_start import SESSION_HAND_KEY, _get_or_deal_hand
 
 User = get_user_model()
+
+
+class DealHandSessionTests(SimpleTestCase):
+    """새로고침(GET 반복)으로 카드를 다시 뽑는 리롤이 불가능한지 검증.
+
+    렌더링 없이 세션 로직만 확인하므로 base.html 의존성과 무관하게 동작한다.
+    """
+
+    def test_hand_is_dealt_when_session_empty(self):
+        session = {}
+        hand = _get_or_deal_hand(session)
+        self.assertEqual(len(hand), HAND_SIZE)
+        self.assertEqual(session[SESSION_HAND_KEY], hand)
+
+    def test_hand_is_reused_on_repeat(self):
+        session = {}
+        first = _get_or_deal_hand(session)
+        # 여러 번 다시 호출해도(=새로고침) 같은 손패가 유지되어야 한다.
+        for _ in range(20):
+            self.assertEqual(_get_or_deal_hand(session), first)
+
+    def test_fresh_hand_after_session_cleared(self):
+        session = {}
+        _get_or_deal_hand(session)
+        session.pop(SESSION_HAND_KEY)  # 신청 완료 시 세션 비움 시뮬레이션
+        new_hand = _get_or_deal_hand(session)
+        self.assertEqual(len(new_hand), HAND_SIZE)
+        self.assertIn(SESSION_HAND_KEY, session)
+
+    def test_corrupted_session_value_is_replaced(self):
+        for bad in ["not-a-list", [], [1, 2, 3], None]:
+            session = {SESSION_HAND_KEY: bad}
+            hand = _get_or_deal_hand(session)
+            self.assertEqual(len(hand), HAND_SIZE)
 
 
 class AttackFlowTests(TestCase):

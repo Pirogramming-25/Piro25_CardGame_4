@@ -4,27 +4,14 @@
 
 {% block extra_css %}
 <style>
-  /* 메시지 알림 최소 스타일 (공통 CSS에 별도 클래스가 없어 보조로 둠) */
-  .messages { list-style: none; max-width: 720px; margin: 16px auto 0; padding: 0; }
-  .messages li {
-    padding: 12px 16px; margin-bottom: 8px; border-radius: 8px; font-size: 14px;
-    background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.12);
-  }
-  .messages li.success { border-color: rgba(61,255,138,.5); color: var(--neon-green); }
-  .messages li.error { border-color: rgba(255,59,92,.5); color: var(--neon-red); }
+
   .row-actions { display: flex; align-items: center; gap: 12px; }
   .game-row .btn-neon { padding: 8px 16px; }
 </style>
 {% endblock %}
 
 {% block content %}
-{% if messages %}
-<ul class="messages">
-  {% for message in messages %}
-  <li class="{{ message.tags }}">{{ message }}</li>
-  {% endfor %}
-</ul>
-{% endif %}
+
 
 <h1 class="page-title">공격하기</h1>
 <p class="page-subtitle">카드를 골라 상대에게 대결을 신청하세요</p>
@@ -62,6 +49,24 @@
     <button type="submit" class="btn-neon">대결 신청</button>
   </div>
 </form>
+
+{% if needs_counter %}
+<h2 class="page-subtitle">내가 반격해야 하는 것들</h2>
+<div class="game-list">
+  {% for g in needs_counter %}
+  <div class="game-row">
+    <div class="who">
+      {{ g.attacker.username }}
+      <span>상대 카드 비공개 · {{ g.created_at|date:"n월 j일 H:i" }}</span>
+    </div>
+    <div class="row-actions">
+      <span class="badge counter">반격 대기</span>
+      <a href="{% url 'game:counter_page' g.pk %}" class="btn-neon red">반격하기</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
 
 {% if my_pending %}
 <h2 class="page-subtitle">내가 보낸 신청</h2>
