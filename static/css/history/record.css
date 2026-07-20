@@ -1,6 +1,9 @@
-* {
-    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-    box-sizing: border-box;
+/* 1. 웹폰트 불러오기 (이미 불러와져 있다면 생략 가능) */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
+
+/* 3. body 태그 기본 설정 */
+body {
+  font-family: 'Space Grotesk', sans-serif !important;
 }
 /* 전체 페이지 컨테이너 */
 .history-page-container {
@@ -42,10 +45,11 @@
 }
 
 .history-card h2 {
-    font-size: 70px;
+    font-size: 30px;
     font-weight: 900;
     color: #ffffff;
     margin: 0;
+    font-family: 'Press Start 2P', monospace !important;
 }
 
 .user-info {
