@@ -19,7 +19,7 @@
     {% if user.is_authenticated %}
     <nav class="nav-links">
       <a href="{% url 'game:attack' %}">게임하기</a>
-      <a href="{% url 'game_list' %}">전적</a>
+      <a href="{% url 'record' %}">전적</a>
       <a href="{% url 'ranking' %}">랭킹보기</a>
     </nav>
     <div style="display:flex;align-items:center;gap:16px;">

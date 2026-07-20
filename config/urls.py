@@ -4,6 +4,7 @@ URL configuration for config project.
 from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse
+from history import views
 
 
 def coming_soon(request):
@@ -19,6 +20,6 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path("games/", coming_soon, name="game_list"),
-    path("ranking/", coming_soon, name="ranking"),
+    path("record/", views.record_view, name="record"),
+    path("ranking/", views.ranking_view, name="ranking"),
 ]
