@@ -6,9 +6,10 @@ from game.models import Game
 
 User = get_user_model()
 
+
 # 1. 전체 랭킹 리그 화면
 def ranking_view(request):
-    # accounts의 Profile 점수 순으로 내림차순 정렬
+    # User 모델의 score 순으로 내림차순 정렬
     ranking_list = User.objects.all().order_by('-score')
     return render(request, 'ranking.html', {'ranking_list': ranking_list})
 
@@ -18,46 +19,58 @@ def ranking_view(request):
 def record_view(request):
     user = request.user
     
-    # 1. 로그인한 유저가 공격자(attacker)이거나 방어자(defender)인 모든 게임을 조회
+    # 로그인한 유저가 공격자(attacker)이거나 방어자(defender)인 모든 게임 조회
     all_my_games = Game.objects.filter(
         Q(attacker=user) | Q(defender=user)
-    ).order_by('-created_at') # 최신 게임 순 정렬 (필드명에 따라 -id 등으로 변경 가능)
+    ).order_by('-id')  # 최신 생성 순 정렬
     
     wins = 0
     losses = 0
     draws = 0
     
-    # 템플릿에서 편리하게 상태를 구별하여 렌더링하기 위해 가공 데이터를 담을 리스트
     processed_games = []
     
     for game in all_my_games:
-        # 기본 매치 정보를 딕셔너리로 세팅
         game_data = {
             'id': game.id,
             'attacker': game.attacker,
             'defender': game.defender,
-            'status': game.status, # 'completed', 'ongoing' 등 모델 스펙에 맞춤
-            'display_status': '',  # 템플릿 분기용 태그
+            'status': game.status,
+            'display_status': '',
         }
         
-        # A. 종료된 게임인 경우 -> 승/무/패 판정 및 통계 계산
-        if game.status == 'completed':
-            if game.result == 'draw':
-                draws += 1
-                game_data['display_status'] = 'draw'
-            elif (game.attacker == user and game.result == 'attacker') or (game.defender == user and game.result == 'defender'):
-                wins += 1
-                game_data['display_status'] = 'win'
+        # A. 게임이 종료된 경우 (Game.Status.FINISHED)
+        if game.status == Game.Status.FINISHED:
+            # 1) winner 필드가 있는 모델 구조인 경우
+            if hasattr(game, 'winner'):
+                if game.winner is None:
+                    draws += 1
+                    game_data['display_status'] = 'draw'
+                elif game.winner == user:
+                    wins += 1
+                    game_data['display_status'] = 'win'
+                else:
+                    losses += 1
+                    game_data['display_status'] = 'lose'
+            # 2) result 문자열 필드를 사용하는 모델 구조인 경우 ('draw', 'attacker_win' 등)
             else:
-                losses += 1
-                game_data['display_status'] = 'lose'
-                
-        # B. 아직 진행 중인 게임인 경우 (status가 'completed'가 아닌 경우)
+                if game.result == 'draw':
+                    draws += 1
+                    game_data['display_status'] = 'draw'
+                elif (game.attacker == user and 'attacker' in str(game.result)) or \
+                     (game.defender == user and 'defender' in str(game.result)):
+                    wins += 1
+                    game_data['display_status'] = 'win'
+                else:
+                    losses += 1
+                    game_data['display_status'] = 'lose'
+
+        # B. 게임이 진행/대기 중인 경우 (Game.Status.WAITING)
         else:
-            # 내가 공격한 게임인데 상대가 아직 반격하지 않은 경우 -> [진행중..] 및 [게임취소] 활성화
+            # 내가 공격하고 상대의 반격을 기다리는 중 -> [진행 중..] & [게임취소]
             if game.attacker == user:
                 game_data['display_status'] = 'my_attack_ongoing'
-            # 다른 유저가 나에게 게임을 신청하여 내가 반격해야 하는 경우 -> [CounterAttack] 활성화
+            # 상대가 나를 공격해서 내가 반격해야 하는 경우 -> [CounterAttack]
             elif game.defender == user:
                 game_data['display_status'] = 'need_counter'
                 
@@ -67,7 +80,7 @@ def record_view(request):
     win_rate = round((wins / total_games) * 100, 1) if total_games > 0 else 0
     
     context = {
-        'games': processed_games, # 가공된 대결 리스트 전달
+        'games': processed_games,
         'wins': wins,
         'losses': losses,
         'draws': draws,
