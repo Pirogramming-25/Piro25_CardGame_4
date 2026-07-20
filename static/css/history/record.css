@@ -1,11 +1,6 @@
 /* 1. 웹폰트 불러오기 (이미 불러와져 있다면 생략 가능) */
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap');
 
-/* 2. 모든 요소 및 기본 폰트 지정 */
-*, *::before, *::after {
-  font-family: 'Space Grotesk', sans-serif !important;
-}
-
 /* 3. body 태그 기본 설정 */
 body {
   font-family: 'Space Grotesk', sans-serif !important;

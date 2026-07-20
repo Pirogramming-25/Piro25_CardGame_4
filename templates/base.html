@@ -8,6 +8,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Piro Game{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/common.css' %}">
+  
+  <style>
+    /* 전적 링크 부모 요소 */
+  .record-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* 텍스트 우측 상단에 딱 붙는 네온 뱃지 */
+  .badge-count {
+    position: absolute;
+    top: -2px;              /* 위쪽 위치를 살짝 내려 텍스트와 밀착 */
+    right: -14px;           /* 우측 위치 조정 */
+    background: #ff2a6d;    /* 네온 핑크 background */
+    color: #ffffff;
+    font-size: 10px;        /* 폰트 크기 살짝 줄임 */
+    font-weight: 800;
+    min-width: 15px;        /* 원형 형태 유지 */
+    height: 15px;
+    border-radius: 50%;     /* 완전한 동그라미 형태로 변경 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 6px #ff2a6d; /* 네온 글로우 효과 */
+    line-height: 1;
+    transform: translateY(-50%); /* 정확한 중앙 기준 위치 배치 */
+  }
+  </style>
+
   {% block extra_css %}{% endblock %}
 </head>
 
@@ -19,7 +49,15 @@
     {% if user.is_authenticated %}
     <nav class="nav-links">
       <a href="{% url 'game:attack' %}">게임하기</a>
-      <a href="{% url 'record' %}">전적</a>
+      
+      <!-- 전적 메뉴 및 미반격 알림 뱃지 추가 -->
+      <a href="{% url 'record' %}" class="record-link">
+        전적
+        {% if pending_counter_count > 0 %}
+          <span class="badge-count">{{ pending_counter_count }}</span>
+        {% endif %}
+      </a>
+      
       <a href="{% url 'ranking' %}">랭킹보기</a>
     </nav>
     <div style="display:flex;align-items:center;gap:16px;">
