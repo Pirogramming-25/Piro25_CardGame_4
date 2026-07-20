@@ -2,10 +2,10 @@ services:
   db:
     image: mysql:8.0
     environment:
-      MYSQL_DATABASE: cardgame
-      MYSQL_USER: cardgame
-      MYSQL_PASSWORD: cardgame1234
-      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
@@ -26,14 +26,8 @@ services:
       - .:/app
     ports:
       - "8000:8000"
-    environment:
-      DEBUG: "True"
-      SECRET_KEY: "dev-key-change-me"
-      DB_NAME: cardgame
-      DB_USER: cardgame
-      DB_PASSWORD: cardgame1234
-      DB_HOST: db
-      DB_PORT: 3306
+    env_file:
+      - .env
     depends_on:
       db:
         condition: service_healthy
