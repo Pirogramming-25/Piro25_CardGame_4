@@ -31,8 +31,9 @@
 }
 
 .podium-card h2 {
-    font-size: 40px;
+    font-size: 30px;
     font-weight: 900;
+    font-family: 'Press Start 2P', monospace !important;
 }
 
 /* 포디엄 그래프 영역 너비 맞춤 */
