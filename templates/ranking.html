@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Piro 명예의 전당{% endblock %}
+
+{% block extra_css %}
+<!-- 분리된 전용 CSS 로드 -->
+<link rel="stylesheet" href="{% static 'css/history/ranking.css' %}">
+<style>
+    body {
+        background: url("{% static 'images/background.png' %}") no-repeat center center fixed !important;
+        background-size: cover !important;
+    }    
+
+    .ranking-page-container {
+        background: transparent !important;
+        width: 100% !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ranking-page-container">
+    <div class="podium-card">
+        <!-- 타이틀 디자인 -->
+        <div class="podium-header">
+            <div class="line"></div>
+            <h2> PIRO Leaderboard </h2>
+            <div class="line"></div>
+        </div>
+
+        <!-- 3위까지 보여주는 막대 그래프 시상대 영역 (2위 - 1위 - 3위) -->
+        <div class="podium-wrapper">
+            {% for item in podium_list %}
+                <div class="podium-item rank-{{ item.rank }}">
+                    <!-- 유저 정보 -->
+                    <div class="user-info">
+                        <div class="user-name">{{ item.user.username }}</div>
+                        <div class="user-score">{{ item.user.score }} pt</div>
+                    </div>
+                    
+                    <!-- 등수별 조건부 바 -->
+                    <div class="bar rank-{{ item.rank }}">
+                        <div class="rank-badge">
+                            {% if item.rank == 1 %}🏆
+                            {% elif item.rank == 2 %}🥈
+                            {% else %}🥉{% endif %}
+                        </div>
+                        <div class="rank-number">{{ item.rank }}</div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="empty-message">등록된 전적이 없습니다.</div>
+            {% endfor %}
+        </div>
+
+        <!-- 4위 이하 가로 바 목록 영역 -->
+        {% if other_rankings %}
+        <div class="ranking-list">
+            {% for user in other_rankings %}
+            <div class="ranking-row">
+                <div class="rank-num">{{ forloop.counter|add:3 }}</div>
+                <div class="user-name">👽 {{ user.username }}</div>
+                <div class="user-score">{{ user.score }} pt</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

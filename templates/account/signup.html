@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load socialaccount %}
+
+{% block title %}회원가입 - Piro Game{% endblock %}
+
+{% block content %}
+
+<div class="brand-window">
+  <div style="font-size:40px;margin-bottom:8px;">👽</div>
+  <h1 class="page-title" style="margin-top:0;">회원가입</h1>
+  <p class="page-subtitle">계정을 만들고 Piro Game을 시작하세요.</p>
+
+  {% if form.non_field_errors %}
+    <p class="form-errors">{{ form.non_field_errors|striptags }}</p>
+  {% endif %}
+
+  <form method="post" action="{% url 'account_signup' %}" class="auth-form">
+    {% csrf_token %}
+
+    <div class="form-group">
+      <label class="form-label" for="id_username">아이디</label>
+      <input type="text" name="username" id="id_username" class="form-input"
+             placeholder="아이디" autofocus
+             value="{{ form.username.value|default:'' }}">
+      {% if form.username.errors %}<p class="form-errors">{{ form.username.errors|striptags }}</p>{% endif %}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="id_password1">비밀번호</label>
+      <input type="password" name="password1" id="id_password1" class="form-input"
+             placeholder="비밀번호">
+      {% if form.password1.errors %}<p class="form-errors">{{ form.password1.errors|striptags }}</p>{% endif %}
+      <ul class="form-hint">
+        <li>다른 개인 정보와 유사한 비밀번호는 사용할 수 없습니다.</li>
+        <li>비밀번호는 최소 8자 이상이어야 합니다.</li>
+        <li>통상적으로 자주 사용되는 비밀번호는 사용할 수 없습니다.</li>
+        <li>숫자로만 이루어진 비밀번호는 사용할 수 없습니다.</li>
+      </ul>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="id_password2">비밀번호 확인</label>
+      <input type="password" name="password2" id="id_password2" class="form-input"
+             placeholder="비밀번호 확인">
+      {% if form.password2.errors %}<p class="form-errors">{{ form.password2.errors|striptags }}</p>{% endif %}
+    </div>
+
+    {% if redirect_field_value %}
+      <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">
+    {% endif %}
+
+    <button type="submit" class="btn-gradient">✨ 회원가입</button>
+  </form>
+
+  <p class="auth-switch">이미 계정이 있으신가요? <a href="{% url 'account_login' %}">로그인</a>하세요.</p>
+
+  <div class="divider-row">또는</div>
+
+  <div class="provider-row">
+    <a href="{% provider_login_url 'kakao' %}" class="btn-provider kakao">
+      <span class="icon-circle kakao-mark">💬</span> 카카오로 시작하기
+    </a>
+    <a href="{% provider_login_url 'google' %}" class="btn-provider google">
+      <span class="icon-circle google-mark">G</span> Google로 시작하기
+    </a>
+  </div>
+</div>
+
+{% endblock %}
